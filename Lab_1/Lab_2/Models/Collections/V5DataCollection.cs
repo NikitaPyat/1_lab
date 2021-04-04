@@ -97,6 +97,7 @@ namespace Lab_2.Models.Collections
             }
         }
 
+
         public override Vector2[] NearEqual(float eps)
         {
             List<Vector2> vec = new List<Vector2>();
@@ -169,6 +170,7 @@ namespace Lab_2.Models.Collections
             }
             return list.GetEnumerator();
         }
+
 
     }
 }

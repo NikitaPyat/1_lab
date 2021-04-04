@@ -22,6 +22,8 @@ namespace Lab_2.Models.Collections
             V5List = new List<V5Data>();
         }
 
+        public string ErrorMessage { get; set; }
+
         public int Count()
         {
             return V5List.Count;
@@ -61,6 +63,13 @@ namespace Lab_2.Models.Collections
 
         public string Error { get; set; }
 
+        public void AddDefaultDataCollection()
+        {
+            V5DataCollection DC = new V5DataCollection("Default DC");
+            DC.InitRandom(1, 10, 10, 0, 10);
+            Add(DC);
+        }
+
         public IEnumerator GetEnumerator()
         {
             return V5List.GetEnumerator();
@@ -85,9 +94,9 @@ namespace Lab_2.Models.Collections
 
         public event PropertyChangedEventHandler PropChange;
 
-        public void IsPropertyChanged(string p = "")
+        public void IsPropertyChanged(string ch = "")
         {
-            PropChange?.Invoke(this, new PropertyChangedEventArgs(p));
+            PropChange?.Invoke(this, new PropertyChangedEventArgs(ch));
         }
 
         public bool Remove(string id, DateTime d)
@@ -199,39 +208,26 @@ namespace Lab_2.Models.Collections
         public void Save(string filename)
         {
             FileStream fs = null;
-            try
-            {
+            try {
                 fs = File.Create(filename);
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(fs, this);
                 Change = false;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Save\n" + e.Message);
-            }
-            finally
-            {
-                if (fs != null) fs.Close();
-            }
+            catch (Exception) { Console.WriteLine("Save error");}
+            finally { if (fs != null) fs.Close(); }
         }
 
-        public void Load(string filename)
-        {
+        public void Load(string filename) {
             FileStream fs = null;
-            try
-            {
+            try {
                 fs = File.OpenRead(filename);
                 BinaryFormatter bf = new BinaryFormatter();
                 List<V5Data> l = bf.Deserialize(fs) as List<V5Data>;
                 V5List = l;
             }
-            catch (Exception ex)
-            {
-                Error = "Loading error: " + ex.Message;
-            }
-            finally
-            {
+            catch (Exception) { Error = "Loading error";}
+            finally {
                 Change = true;
                 if (fs != null) fs.Close();
                 IsCollectionChanged(NotifyCollectionChangedAction.Add);

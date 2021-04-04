@@ -4,8 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp"
+        xmlns:a="clr-namespace:Lab_2.Models.Collections;assembly=Lab_2"
+        xmlns:b ="clr-namespace:WpfApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200">
+    <Window.Resources>
+        <a:V5MainCollection x:Key="main_collection"></a:V5MainCollection>
+    </Window.Resources>
+
     <Grid>
         <Grid Name = "File"
         Margin="20,30,0,0"
@@ -70,14 +76,6 @@
             VerticalAlignment="Top"
             Click="ButtonV5DataOnGrid"/>
 
-            <Button Content="Add Element from File"
-            Margin="600,0,0,0"
-            Height="20"
-            Width="160"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Click="ButtonFromFile"/>
-
             <Button Content="Remove"
             Margin="800,0,0,0"
             Height="20"
@@ -108,5 +106,20 @@
         Height="300"
         VerticalAlignment="Top"
         HorizontalAlignment="Left"/>
+
+        <TextBlock x:Name="IsChanged" HorizontalAlignment="Left" 
+                   Text="{Binding Path= Changed }"
+                   Margin="320,500,0,0" 
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top"
+                   Height="20" 
+                   Width="180"/>
+        <TextBlock x:Name="Min_MC" HorizontalAlignment="Left" 
+                   Text="{Binding Path= MinMC }"
+                   Margin="120,500,0,0" 
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top"
+                   Height="20" 
+                   Width="180"/>
     </Grid>
 </Window>

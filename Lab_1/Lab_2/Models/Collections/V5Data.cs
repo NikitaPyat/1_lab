@@ -19,11 +19,11 @@ namespace Lab_2.Models.Collections
             date = d;
         }
 
-        public string infoD
-        {
-            get{ return info;}
-            set{info = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("info"));}
-        }
+        public string GetinfoD()
+        { return info; }
+
+        public void SetinfoD(string value)
+        { info = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("info")); }
         public DateTime dateD
         {
             get {return date; }
