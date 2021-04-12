@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Lab_2.Models.Collections
 {
-    public class V5DataCollection : V5Data, IEnumerable<DataItem>
+    [Serializable]
+    public class V5DataCollection : V5Data, IEnumerable<DataItem>, ISerializable
     {
         public List<DataItem> Ditems { get; set; }
         public Dictionary<System.Numerics.Vector2, System.Numerics.Vector2> dic { get; set; }
@@ -171,6 +173,38 @@ namespace Lab_2.Models.Collections
             return list.GetEnumerator();
         }
 
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            int i = 0;
+            float[] coordx = new float[dic.Count];
+            float[] coordy = new float[dic.Count];
+            float[] valx   = new float[dic.Count];
+            float[] valy   = new float[dic.Count];
+            foreach (KeyValuePair<Vector2, Vector2> pair in dic) {
+                coordx[i] = pair.Key.X;
+                coordy[i] = pair.Key.Y;
+                valx[i] = pair.Value.X;
+                valy[i] = pair.Value.Y;
+                i++;
+            }
+            info.AddValue("coordx", coordx);
+            info.AddValue("coordy", coordy);
+            info.AddValue("valx", valx);
+            info.AddValue("valy", valy);
+            info.AddValue("info", info);
+            info.AddValue("date", date);
+        }
 
+        public V5DataCollection(SerializationInfo info, StreamingContext context) : base((string)info.GetValue("InfoData", typeof(string)),
+                    (DateTime)info.GetValue("Time", typeof(DateTime))) {
+            float[] coordx = (float[])info.GetValue("coordx", typeof(float[]));
+            float[] coordy = (float[])info.GetValue("coordy", typeof(float[]));
+            float[] valx = (float[])info.GetValue("valx", typeof(float[]));
+            float[] valy = (float[])info.GetValue("valy", typeof(float[]));
+            dic = new Dictionary<Vector2, Vector2>();
+            for (int j = 0; j < coordx.Length; j += 1) {
+                dic.Add(new Vector2(coordx[j], coordy[j]), new Vector2(valx[j], valy[j]));
+            }
+        }
     }
 }

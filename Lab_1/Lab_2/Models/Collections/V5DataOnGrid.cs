@@ -1,13 +1,15 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using System.Globalization;
+using System.Runtime.Serialization;
 
 namespace Lab_2.Models.Collections
 {
-    public class V5DataOnGrid : V5Data, IEnumerable<DataItem>
+    [Serializable]
+    public class V5DataOnGrid : V5Data, IEnumerable<DataItem>, ISerializable
     {
         public Grid2D net { get; set; }
         public Vector2[,] mas { get; set; }
@@ -42,9 +44,55 @@ namespace Lab_2.Models.Collections
             }
         }
 
+        public V5DataOnGrid(string filename){
+            StreamReader sr = null;
 
-        public override Vector2[] NearEqual(float eps)
-        {
+            try{
+                sr = new StreamReader(filename);
+                info = sr.ReadLine();
+                date = DateTime.Parse(sr.ReadLine());
+
+                Grid2D grid = new Grid2D {
+                    x_kol = int.Parse(sr.ReadLine()),
+                    x_step = float.Parse(sr.ReadLine()),
+                    y_kol = int.Parse(sr.ReadLine()),
+                    y_step = float.Parse(sr.ReadLine()),
+                };
+                net = grid;
+                mas = new Vector2[net.x_kol, net.y_kol];
+
+                for (int i = 0; i < net.x_kol; i++)
+                    for (int j = 0; j < net.y_kol; j++) {
+                        string[] data = sr.ReadLine().Split(' ');
+                        mas[i, j] = new Vector2(
+                             (float)Convert.ToDouble(data[0]),
+                             (float)Convert.ToDouble(data[1]));
+                    }
+            }
+            catch (ArgumentException) {
+                Console.WriteLine("Filename is empty string");
+            }
+            catch (FileNotFoundException) {
+                Console.WriteLine("File is not found");
+            }
+            catch (DirectoryNotFoundException) {
+                Console.WriteLine("Directory is not found");
+            }
+            catch (IOException) {
+                Console.WriteLine("Unacceptable filename");
+            }
+            catch (FormatException) {
+                Console.WriteLine("String could not be parsed");
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
+            finally {
+                if (sr != null) sr.Dispose();
+            }
+        }
+
+        public override Vector2[] NearEqual(float eps) {
             List<Vector2> list = new List<Vector2>();
             for (int i = 0; i < net.x_kol; i++)
                 for (int j = 0; j < net.y_kol; j++)
@@ -54,8 +102,7 @@ namespace Lab_2.Models.Collections
             return array;
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return "V5DataOnGrid\n" + info + " " + date.ToString() + " " + net.ToString() + "\n";
         }
 
@@ -134,6 +181,33 @@ namespace Lab_2.Models.Collections
                     list.Add(tmp);
                 }
             return list.GetEnumerator();
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context) {
+            float[] valx = new float[net.x_kol];
+            float[] valy = new float[net.y_kol];
+            for (int i = 0; i < valx.Length; i++)
+                for (int j = 0; j < valy.Length; j++) {
+                    valx[i] = mas[i, j].X;
+                    valy[j] = mas[i, j].Y;
+                }
+            info.AddValue("net", net);
+            info.AddValue("valx", valx);
+            info.AddValue("valy", valy);
+            info.AddValue("info", info);
+            info.AddValue("date", date);
+        }
+        public V5DataOnGrid(SerializationInfo info, StreamingContext contex) : base((string)info.GetValue("InfoData", typeof(string)),
+                       (DateTime)info.GetValue("Time", typeof(DateTime))) {
+            net = (Grid2D)info.GetValue("net", typeof(Grid2D));
+            mas = new Vector2[net.x_kol, net.y_kol];
+            float[] valx = (float[])info.GetValue("valx", typeof(float[]));
+            float[] valy = (float[])info.GetValue("valy", typeof(float[]));
+            for (int i = 0; i < valx.Length; i++)
+                for (int j = 0; j < valy.Length; j++) {
+                    mas[i, j].X = valx[i];
+                    mas[i, j].Y = valy[j];
+                }
         }
     }
 }

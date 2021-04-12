@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Lab_2.Models
 {
+    [Serializable]
     public struct Grid2D
     {
         public float x_step { get; set; }

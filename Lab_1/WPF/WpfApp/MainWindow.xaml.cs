@@ -10,101 +10,147 @@ namespace WpfApp
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
+        private V5MainCollection Main = new V5MainCollection();
+        public MainWindow(){
             InitializeComponent();
+            DataContext = Main;
         }
-
-        public void ButtonV5MainCollection(object sender, RoutedEventArgs e) {
-            if (TryFindResource("main_collection") is V5MainCollection coll) { coll.AddDefaults(); }
-        }
-
-        public void ButtonV5DataCollection(object sender, RoutedEventArgs e) {
-            V5DataCollection datacollection = new V5DataCollection();
-            datacollection.InitRandom(3, (float)0.5, (float)0.5, (float)0.1, (float)1.0);
-            if (TryFindResource("main_collection") is V5MainCollection coll) {
-                coll.Add(datacollection);
+        private void ButtonNew(object sender, RoutedEventArgs e)
+        {
+            if (Main.Change == true) {
+                UnsavedChanges();
             }
+            Main = new V5MainCollection();
+            DataContext = Main;
+            ErrorMsg();
         }
 
-        public void ButtonV5DataOnGrid(object sender, RoutedEventArgs e) {
-            Grid2D g = new Grid2D((float)0.3, 3, (float)0.3, 3);
-            V5DataOnGrid dataongrid = new V5DataOnGrid("", DateTime.Now, g);
-            dataongrid.InitRandom((float)0.1, (float)1.0);
-            if (TryFindResource("main_collection") is V5MainCollection coll) { coll.Add(dataongrid); }
-        }
-
-        public void ButtonRemove(object sender, RoutedEventArgs e) {
-            if (TryFindResource("main_collection") is V5MainCollection coll) {
-                try { coll.RemoveAt(lisBox_Main.SelectedIndex); }
-                catch (Exception) { MessageBox.Show("Choose element"); }
-            }
-        }
-
-        public void ButtonNew(object sender, RoutedEventArgs e) {
-            V5MainCollection res = TryFindResource("main_collection") as V5MainCollection;
-            if ((res != null) && (res.Change == true)) {
-                MessageBoxResult result = MessageBox.Show("Do you want to save changes?", " ", MessageBoxButton.YesNo);
-                switch (result) {
-                    case MessageBoxResult.Yes:
-                        Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog();
-                        Microsoft.Win32.SaveFileDialog s = saveFileDialog;
-                        s.Filter = "Documents (.txt)";
-                        s.CreatePrompt = true;
-                        s.OverwritePrompt = true;
-                        if (s.ShowDialog() == true){
-                            string filename = s.FileName;
-                            if (res != null) {res.Save(filename);}
-                        }
-                        break;
-                    case MessageBoxResult.No: break;
+        private void ButtonOpen(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (Main.Change == true) {
+                    UnsavedChanges();
+                }
+                Microsoft.Win32.OpenFileDialog fd = new Microsoft.Win32.OpenFileDialog();
+                if ((bool)fd.ShowDialog() == true) {
+                    Main = new V5MainCollection();
+                    Main.Load(fd.FileName);
+                    DataContext = Main;
                 }
             }
-            if (res != null){res.RemoveAll();}
+            catch (Exception) {
+                MessageBox.Show("Error");
+            }
+            finally
+            {
+                ErrorMsg();
+            }
         }
 
-        public void ButtonOpen(object sender, RoutedEventArgs e) {
-            V5MainCollection res = TryFindResource("main_collection") as V5MainCollection;
-            if ((res != null) && (res.Change == true)) {
-                MessageBoxResult result = MessageBox.Show("Do you want to save changes?", " ", MessageBoxButton.YesNo);
-                switch (result) {
-                    case MessageBoxResult.Yes:
-                        Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog {
-                            Filter = "Text documents (.txt)|*.txt",
-                            CreatePrompt = true,
-                            OverwritePrompt = true
-                        };
-                        if (dlg.ShowDialog() == true) {
-                            string filename = dlg.FileName;
-                            if (res != null){ res.Save(filename);}
-                        }
-                        break;
-                    case MessageBoxResult.No: break;
-                }
+        private void ButtonSave(object sender, RoutedEventArgs e)
+        {
+            try{
+                Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
+                if ((bool)dialog.ShowDialog() == true)
+                    Main.Save(dialog.FileName);
             }
-            try {
-                Microsoft.Win32.OpenFileDialog dlg1 = new Microsoft.Win32.OpenFileDialog{Filter = "Documents (.txt)"};
-                if (dlg1.ShowDialog() == true) {
-                    string filename = dlg1.FileName;
-                    if (res != null) {
-                        res.Load(filename);
-                        res.Change = false;
-                    }
-
-                }
+            catch (Exception) {
+                MessageBox.Show("Error");
             }
-            catch (Exception) {MessageBox.Show("Uncorrect file");}
+            finally{
+                ErrorMsg();
+            }
         }
 
-        public void ButtonSave(object sender, RoutedEventArgs e) {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog{
-                Filter = "Text documents (.txt)|*.txt",
-                CreatePrompt = true,
-                OverwritePrompt = true
-            };
-            if (dlg.ShowDialog() == true){
-                string filename = dlg.FileName;
-                if (TryFindResource("main_collection") is V5MainCollection coll){coll.Save(filename);}
+        private void ButtonAddElement(object sender, RoutedEventArgs e)
+        {
+            try{
+                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                if ((bool)dlg.ShowDialog() == true) Main.AddFromFile(dlg.FileName);
+            }
+            catch (Exception){
+                MessageBox.Show("Add error");
+            }
+            finally{
+                ErrorMsg();
+            }
+        }
+
+        private void ButtonV5DataCollection(object sender, RoutedEventArgs e)
+        {
+            Main.AddDefaultDataCollection();
+            ErrorMsg();
+        }
+
+        private void ButtonV5MainCollection(object sender, RoutedEventArgs e)
+        {
+            Main.AddDefaults();
+            DataContext = Main;
+            ErrorMsg();
+        }
+
+        private void ButtonV5DataOnGrid(object sender, RoutedEventArgs e)
+        {
+            Main.AddDefaultDataOnGrid();
+            ErrorMsg();
+        }
+
+        private bool UnsavedChanges()
+        {
+            MessageBoxResult msg = MessageBox.Show("Save Changes?", "Save", MessageBoxButton.YesNoCancel);
+            if (msg == MessageBoxResult.Cancel){
+                return true;
+            }
+            else if (msg == MessageBoxResult.Yes) {
+                Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
+                if ((bool)dialog.ShowDialog() == true) Main.Save(dialog.FileName);
+            }
+            return false;
+        }
+
+        private void AppClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Main.Change == true){
+                e.Cancel = UnsavedChanges();
+            }
+            ErrorMsg();
+        }
+
+        private void ButtonRemove(object sender, RoutedEventArgs e)
+        {
+            var selectedLB = lisBox_Main.SelectedItems;
+            List<V5Data> Items = new List<V5Data>();
+            Items.AddRange(selectedLB.Cast<V5Data>());
+            foreach (V5Data item in Items){
+                Main.Remove(item.info, item.date);
+            }
+            ErrorMsg();
+        }
+
+        private void FilterDataCollection(object sender, FilterEventArgs args)
+        {
+            var item = args.Item;
+            if (item != null == true){
+                if (item.GetType() == typeof(V5DataCollection)) args.Accepted = true;
+                else args.Accepted = false;
+            }
+        }
+
+        private void FilterDataOnGrid(object sender, FilterEventArgs args)
+        {
+            var item = args.Item;
+            if (item != null == true){
+                if (item.GetType() == typeof(V5DataOnGrid)) args.Accepted = true;
+                else args.Accepted = false;
+            }
+        }
+
+        public void ErrorMsg()
+        {
+            if (Main.ErrorMessage != null){
+                MessageBox.Show(Main.ErrorMessage, "Error");
+                Main.ErrorMessage = null;
             }
         }
     }

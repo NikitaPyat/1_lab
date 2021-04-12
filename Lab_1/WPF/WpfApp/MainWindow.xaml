@@ -9,10 +9,27 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200">
     <Window.Resources>
-        <a:V5MainCollection x:Key="main_collection"></a:V5MainCollection>
+        <CollectionViewSource  Source="{Binding}"  
+                               x:Key="key_view_V5DataCollection" 
+                               Filter="FilterDataCollection"/>
+        <CollectionViewSource  Source="{Binding}"
+                               x:Key="key_view_V5DataOnGrid"
+                               Filter="FilterDataOnGrid"/>
+        <local:GridConverter x:Key="key_gridConvert" />
+
+        <DataTemplate x:Key="Details">
+            <StackPanel Margin="5">
+                <TextBlock FontSize="12" 
+                           Text="{Binding Path=Coord}"
+                           HorizontalAlignment="Left" />
+                <TextBlock FontSize="12"
+                           Text="{Binding Path=Value}" 
+                           HorizontalAlignment="Left" />
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
 
-    <Grid>
+    <Grid HorizontalAlignment="Right" Width="1200">
         <Grid Name = "File"
         Margin="20,30,0,0"
         Height="20"
@@ -43,6 +60,14 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Click="ButtonSave"/>
+
+            <TextBox Text="File" 
+                     Margin="20,30,0,0"
+                     Height="20"
+                     Width="160"
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Top"
+                     HorizontalContentAlignment ="Center"/>
         </Grid>
 
         <Grid Name = "Edit"
@@ -76,6 +101,14 @@
             VerticalAlignment="Top"
             Click="ButtonV5DataOnGrid"/>
 
+            <Button Content="Add element from file"
+            Margin="600,0,0,0"
+            Height="20"
+            Width="160"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="ButtonAddElement"/>
+
             <Button Content="Remove"
             Margin="800,0,0,0"
             Height="20"
@@ -94,6 +127,7 @@
         HorizontalAlignment="Left"/>
 
         <ListBox x:Name="lisBox_DataCollection"
+                 ItemsSource="{Binding Source={StaticResource key_view_V5DataCollection}}"
         Margin="300,100,0,0"
         Height="300"
         Width="200"
@@ -101,20 +135,30 @@
         HorizontalAlignment="Left"/>
 
         <ListBox x:Name="lisBox_DataOnGrid"
+                 ItemsSource="{Binding Source={StaticResource key_view_V5DataOnGrid}}"
         Margin="550,100,0,0"
         Width="200"
         Height="300"
         VerticalAlignment="Top"
         HorizontalAlignment="Left"/>
 
-        <TextBlock x:Name="IsChanged" HorizontalAlignment="Left" 
+        <TextBlock x:Name="listboxDoG_details"
+                 Margin="0,0,212,314"
+                 Width="180"
+                 HorizontalAlignment="Right" 
+                 Height="240" 
+                 VerticalAlignment="Bottom"/>
+
+        <TextBlock x:Name="IsChanged" 
+                   HorizontalAlignment="Left" 
                    Text="{Binding Path= Changed }"
                    Margin="320,500,0,0" 
                    TextWrapping="Wrap" 
                    VerticalAlignment="Top"
                    Height="20" 
                    Width="180"/>
-        <TextBlock x:Name="Min_MC" HorizontalAlignment="Left" 
+        <TextBlock x:Name="Min_MC" 
+                   HorizontalAlignment="Left" 
                    Text="{Binding Path= MinMC }"
                    Margin="120,500,0,0" 
                    TextWrapping="Wrap" 

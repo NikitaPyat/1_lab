@@ -10,10 +10,11 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleToAttribute("WpfApp")]
 namespace Lab_2.Models.Collections
 {
     [Serializable]
-    public class V5MainCollection : IEnumerable, INotifyCollectionChanged
+    public class V5MainCollection : IEnumerable, INotifyCollectionChanged, INotifyPropertyChanged
     {
         public List<V5Data> V5List { get; set; }
         public bool Change { get; set; }
@@ -63,15 +64,13 @@ namespace Lab_2.Models.Collections
 
         public string Error { get; set; }
 
-        public void AddDefaultDataCollection()
-        {
-            V5DataCollection DC = new V5DataCollection("Default DC");
-            DC.InitRandom(1, 10, 10, 0, 10);
+        public void AddDefaultDataCollection() {
+            V5DataCollection DC = new V5DataCollection("DC");
+            DC.InitRandom(2, 5, 5, 0, 5);
             Add(DC);
         }
 
-        public IEnumerator GetEnumerator()
-        {
+        public IEnumerator GetEnumerator() {
             return V5List.GetEnumerator();
         }
 
@@ -92,11 +91,11 @@ namespace Lab_2.Models.Collections
             DataChanged?.Invoke(this, new DataChangedEventArgs(ChangeInfo.Replace, ((V5Data)source).info));
         }
 
-        public event PropertyChangedEventHandler PropChange;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void IsPropertyChanged(string ch = "")
         {
-            PropChange?.Invoke(this, new PropertyChangedEventArgs(ch));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ch));
         }
 
         public bool Remove(string id, DateTime d)
@@ -121,6 +120,19 @@ namespace Lab_2.Models.Collections
         {
             V5List.Clear();
             OnCollectionChanged(this, NotifyCollectionChangedAction.Reset);
+        }
+
+        public void AddFromFile(string filename)
+        {
+            try
+            {
+                V5DataOnGrid DG = new V5DataOnGrid(filename);
+                Add(DG);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
@@ -233,6 +245,13 @@ namespace Lab_2.Models.Collections
                 IsCollectionChanged(NotifyCollectionChangedAction.Add);
                 IsPropertyChanged("change");
             }
+        }
+
+        public void AddDefaultDataOnGrid() {
+            Grid2D grid = new Grid2D();
+            V5DataOnGrid DoG = new V5DataOnGrid("Default DoG", default, grid);
+            DoG.InitRandom(0, 10);
+            Add(DoG);
         }
     }
 }

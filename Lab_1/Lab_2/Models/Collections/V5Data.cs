@@ -6,6 +6,7 @@ using System.ComponentModel;
 
 namespace Lab_2.Models.Collections
 {
+    [Serializable]
     public abstract class V5Data
     {
         public string info { get; set; }
