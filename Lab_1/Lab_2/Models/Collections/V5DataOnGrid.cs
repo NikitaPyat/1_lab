@@ -194,11 +194,11 @@ namespace Lab_2.Models.Collections
             info.AddValue("net", net);
             info.AddValue("valx", valx);
             info.AddValue("valy", valy);
-            info.AddValue("info", info);
-            info.AddValue("date", date);
+            info.AddValue("info", base.info);
+            info.AddValue("date", base.date);
         }
-        public V5DataOnGrid(SerializationInfo info, StreamingContext contex) : base((string)info.GetValue("InfoData", typeof(string)),
-                       (DateTime)info.GetValue("Time", typeof(DateTime))) {
+        public V5DataOnGrid(SerializationInfo info, StreamingContext contex) : base((string)info.GetValue("info", typeof(string)),
+                       (DateTime)info.GetValue("date", typeof(DateTime))) {
             net = (Grid2D)info.GetValue("net", typeof(Grid2D));
             mas = new Vector2[net.x_kol, net.y_kol];
             float[] valx = (float[])info.GetValue("valx", typeof(float[]));

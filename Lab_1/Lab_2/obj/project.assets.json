@@ -8,23 +8,23 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\Pyata\\.nuget\\packages\\": {},
+    "C:\\Users\\NPyatakov\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Pyata\\OneDrive\\Рабочий стол\\Lab_1\\Lab_2\\Lab_2.csproj",
+      "projectUniqueName": "C:\\Users\\NPyatakov\\Desktop\\Lab_1\\Lab_2\\Lab_2.csproj",
       "projectName": "Lab_2",
-      "projectPath": "C:\\Users\\Pyata\\OneDrive\\Рабочий стол\\Lab_1\\Lab_2\\Lab_2.csproj",
-      "packagesPath": "C:\\Users\\Pyata\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Pyata\\OneDrive\\Рабочий стол\\Lab_1\\Lab_2\\obj\\",
+      "projectPath": "C:\\Users\\NPyatakov\\Desktop\\Lab_1\\Lab_2\\Lab_2.csproj",
+      "packagesPath": "C:\\Users\\NPyatakov\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\NPyatakov\\Desktop\\Lab_1\\Lab_2\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Pyata\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\NPyatakov\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

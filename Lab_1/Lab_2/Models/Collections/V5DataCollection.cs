@@ -5,6 +5,7 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Windows;
 
 namespace Lab_2.Models.Collections
 {
@@ -15,6 +16,7 @@ namespace Lab_2.Models.Collections
         public Dictionary<System.Numerics.Vector2, System.Numerics.Vector2> dic { get; set; }
         public V5DataCollection()
         {
+            dic = new Dictionary<Vector2, Vector2>();
             Ditems = new List<DataItem>();
         }
 
@@ -85,17 +87,23 @@ namespace Lab_2.Models.Collections
             for (int i = 0; i < nItems; i++)
             {
 
-                x = (float)r.NextDouble();
-                y = (float)r.NextDouble();
-                data_x = (float)r.NextDouble();
-                data_y = (float)r.NextDouble();
+                x = (float)1;//(float)r.NextDouble();
+                y = (float)2;//(float)r.NextDouble();
+                data_x = (float)5;//(float)r.NextDouble();
+                data_y = (float)10;//(float)r.NextDouble();
                 data_x = minValue + (maxValue - minValue) * data_x;
                 data_y = minValue + (maxValue - minValue) * data_y;
                 x = xmax * x;
-                y = ymax * y;
-                point = new Vector2(x, y);
-                value = new Vector2(data_x, data_y);
-                dic.Add(point, value);
+                y = (float)ymax * y;
+                try {
+                    point = new Vector2(x, y);
+                    value = new Vector2(data_x, data_y);
+                    dic.Add(point, value);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Error ", e.ToString());
+                }
             }
         }
 
@@ -191,12 +199,12 @@ namespace Lab_2.Models.Collections
             info.AddValue("coordy", coordy);
             info.AddValue("valx", valx);
             info.AddValue("valy", valy);
-            info.AddValue("info", info);
+            info.AddValue("info", base.info);
             info.AddValue("date", date);
         }
 
-        public V5DataCollection(SerializationInfo info, StreamingContext context) : base((string)info.GetValue("InfoData", typeof(string)),
-                    (DateTime)info.GetValue("Time", typeof(DateTime))) {
+        public V5DataCollection(SerializationInfo info, StreamingContext context) : base((string)info.GetValue("info", typeof(string)),
+                    (DateTime)info.GetValue("date", typeof(DateTime))) {
             float[] coordx = (float[])info.GetValue("coordx", typeof(float[]));
             float[] coordy = (float[])info.GetValue("coordy", typeof(float[]));
             float[] valx = (float[])info.GetValue("valx", typeof(float[]));

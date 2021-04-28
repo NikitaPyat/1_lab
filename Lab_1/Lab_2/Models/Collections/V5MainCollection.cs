@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 namespace Lab_2.Models.Collections
 {
     [Serializable]
-    public class V5MainCollection : IEnumerable, INotifyCollectionChanged, INotifyPropertyChanged
+    public class V5MainCollection : IEnumerable<V5Data>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         public List<V5Data> V5List { get; set; }
         public bool Change { get; set; }
@@ -29,17 +29,31 @@ namespace Lab_2.Models.Collections
         {
             return V5List.Count;
         }
+        public IEnumerator<V5Data> GetEnumerator()
+        {
+            return V5List.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return V5List.GetEnumerator();
+        }
         public V5Data this[int index]
         {
             get { return V5List[index]; }
             set { V5List[index] = value; DataChanged?.Invoke(this, new DataChangedEventArgs(ChangeInfo.ItemChanged, V5List[index].info)); }
         }
         public event DataChangedEventHandler DataChanged;
+
+        [field: NonSerialized]
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public void IsCollectionChanged(NotifyCollectionChangedAction ev)
+        public void OnCollectionChanged(NotifyCollectionChangedAction ev)
         {
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            if (CollectionChanged != null)
+            {
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
         }
 
         public void RemoveAt(int index)
@@ -65,13 +79,9 @@ namespace Lab_2.Models.Collections
         public string Error { get; set; }
 
         public void AddDefaultDataCollection() {
-            V5DataCollection DC = new V5DataCollection("DC");
+            V5DataCollection DC = new V5DataCollection();
             DC.InitRandom(2, 5, 5, 0, 5);
             Add(DC);
-        }
-
-        public IEnumerator GetEnumerator() {
-            return V5List.GetEnumerator();
         }
 
         protected virtual void OnCollectionChanged(object source, NotifyCollectionChangedAction action)
@@ -81,21 +91,33 @@ namespace Lab_2.Models.Collections
 
         public void Add(V5Data item)
         {
-            item.PropertyChanged += OnPropertyChanged;
-            V5List.Add(item);
-            DataChanged?.Invoke(this, new DataChangedEventArgs(ChangeInfo.Add, item.info));
+            try
+            {
+                V5List.Add(item);
+                OnCollectionChanged(NotifyCollectionChangedAction.Add);
+                Change = true;
+                OnPropertyChanged("change");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Add Element: " + ex.Message;
+            }
         }
         void OnPropertyChanged(object source, PropertyChangedEventArgs args)
         {
-            Console.WriteLine(args.PropertyName + " changed");
+            Console.WriteLine(args.PropertyName + " change");
             DataChanged?.Invoke(this, new DataChangedEventArgs(ChangeInfo.Replace, ((V5Data)source).info));
         }
 
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void IsPropertyChanged(string ch = "")
+        public void OnPropertyChanged(string ch = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ch));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ch));
+            }
         }
 
         public bool Remove(string id, DateTime d)
@@ -138,8 +160,9 @@ namespace Lab_2.Models.Collections
 
         public void AddDefaults()
         {
-            Random rand = new Random(123);
-            int NElem = rand.Next(2, 11), Rand1, Rand2;
+            Random rand = new Random();
+
+            int NElem = rand.Next(3, 7), Rand1, Rand2, Rand3, Rand4;
             Grid2D Gr;
             V5DataCollection DataColl;
             V5DataOnGrid DataGrid;
@@ -147,21 +170,25 @@ namespace Lab_2.Models.Collections
             for (int i = 0; i < NElem; i++)
             {
                 Rand1 = rand.Next(0, 2);
-                Gr = new Grid2D(2, 2, 2, 2);
                 if (Rand1 == 0)
                 {
-                    DataGrid = new V5DataOnGrid("DG", DateTime.Now, Gr);
+                    Rand3 = rand.Next(1, 10);
+                    Rand4 = rand.Next(1, 10);
+                    Gr = new Grid2D(Rand3, Rand3, Rand4, Rand4);
+                    DataGrid = new V5DataOnGrid("", DateTime.Now, Gr);
                     DataGrid.InitRandom(0, 10);
-                    Add(DataGrid);
+                    V5List.Add(DataGrid);
                 }
                 else
                 {
                     Rand2 = rand.Next(1, 10);
-                    DataColl = new V5DataCollection("DC", DateTime.Now);
-                    DataColl.InitRandom(Rand2, 2, 5, 2, 3);
-                    Add(DataColl);
+                    DataColl = new V5DataCollection("", DateTime.Now);
+                    DataColl.InitRandom(Rand2, 4, 5, 1, 4);
+                    V5List.Add(DataColl);
                 }
             }
+            OnCollectionChanged(this, NotifyCollectionChangedAction.Reset);
+            Change = true;
         }
 
         public override string ToString()
@@ -220,30 +247,44 @@ namespace Lab_2.Models.Collections
         public void Save(string filename)
         {
             FileStream fs = null;
-            try {
-                fs = File.Create(filename);
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(fs, this);
-                Change = false;
+            try
+            {
+                if (!File.Exists(filename))
+                {
+                    fs = File.Create(filename);
+                }
+                else
+                {
+                    fs = File.OpenWrite(filename);
+                }
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, V5List);
             }
-            catch (Exception) { Console.WriteLine("Save error");}
-            finally { if (fs != null) fs.Close(); }
+            finally
+            {
+                if (fs != null)
+                    fs.Close();
+                Change = false;
+                OnPropertyChanged("change");
+            }
         }
 
         public void Load(string filename) {
             FileStream fs = null;
-            try {
+            try
+            {
                 fs = File.OpenRead(filename);
                 BinaryFormatter bf = new BinaryFormatter();
-                List<V5Data> l = bf.Deserialize(fs) as List<V5Data>;
-                V5List = l;
+                var list = (List<V5Data>)bf.Deserialize(fs);
+                V5List = list;
             }
-            catch (Exception) { Error = "Loading error";}
-            finally {
+            finally
+            {
+                if (fs != null)
+                    fs.Close();
                 Change = true;
-                if (fs != null) fs.Close();
-                IsCollectionChanged(NotifyCollectionChangedAction.Add);
-                IsPropertyChanged("change");
+                OnCollectionChanged(NotifyCollectionChangedAction.Add);
+                OnPropertyChanged("change");
             }
         }
 

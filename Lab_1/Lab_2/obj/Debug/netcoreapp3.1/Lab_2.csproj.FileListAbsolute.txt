@@ -33,3 +33,11 @@ C:\Users\Pyata\OneDrive\Рабочий стол\Lab_1\Lab_2\bin\Debug\netcoreapp
 C:\Users\Pyata\OneDrive\Рабочий стол\Lab_1\Lab_2\bin\Debug\netcoreapp3.1\Lab_2.dll
 C:\Users\Pyata\OneDrive\Рабочий стол\Lab_1\Lab_2\bin\Debug\netcoreapp3.1\Lab_2.pdb
 C:\Users\Pyata\OneDrive\Рабочий стол\Lab_1\Lab_2\obj\Debug\netcoreapp3.1\Lab_2.csprojAssemblyReference.cache
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\bin\Debug\netcoreapp3.1\Lab_2.deps.json
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\bin\Debug\netcoreapp3.1\Lab_2.dll
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\bin\Debug\netcoreapp3.1\Lab_2.pdb
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\obj\Debug\netcoreapp3.1\Lab_2.AssemblyInfoInputs.cache
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\obj\Debug\netcoreapp3.1\Lab_2.AssemblyInfo.cs
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\obj\Debug\netcoreapp3.1\Lab_2.csproj.CoreCompileInputs.cache
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\obj\Debug\netcoreapp3.1\Lab_2.dll
+C:\Users\NPyatakov\Desktop\Lab_1\Lab_2\obj\Debug\netcoreapp3.1\Lab_2.pdb

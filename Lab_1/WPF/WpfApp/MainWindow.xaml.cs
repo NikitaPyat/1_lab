@@ -55,10 +55,10 @@ namespace WpfApp
                 if ((bool)dialog.ShowDialog() == true)
                     Main.Save(dialog.FileName);
             }
-            catch (Exception) {
-                MessageBox.Show("Error");
+            catch (Exception ex) {
+                MessageBox.Show("Error ButtonSave" + ex.Message);
             }
-            finally{
+            finally {
                 ErrorMsg();
             }
         }
@@ -117,7 +117,7 @@ namespace WpfApp
             ErrorMsg();
         }
 
-        private void ButtonRemove(object sender, RoutedEventArgs e)
+        /*private void ButtonRemove(object sender, RoutedEventArgs e)
         {
             var selectedLB = lisBox_Main.SelectedItems;
             List<V5Data> Items = new List<V5Data>();
@@ -126,6 +126,12 @@ namespace WpfApp
                 Main.Remove(item.info, item.date);
             }
             ErrorMsg();
+        }*/
+
+        private void ButtonRemove(object sender, RoutedEventArgs e)
+        {
+            if (Main != null)
+                Main.RemoveAt(lisBox_Main.SelectedIndex);
         }
 
         private void FilterDataCollection(object sender, FilterEventArgs args)

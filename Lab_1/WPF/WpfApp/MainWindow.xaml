@@ -151,16 +151,8 @@
 
         <TextBlock x:Name="IsChanged" 
                    HorizontalAlignment="Left" 
-                   Text="{Binding Path= Changed }"
+                   Text="{Binding Path= Change }"
                    Margin="320,500,0,0" 
-                   TextWrapping="Wrap" 
-                   VerticalAlignment="Top"
-                   Height="20" 
-                   Width="180"/>
-        <TextBlock x:Name="Min_MC" 
-                   HorizontalAlignment="Left" 
-                   Text="{Binding Path= MinMC }"
-                   Margin="120,500,0,0" 
                    TextWrapping="Wrap" 
                    VerticalAlignment="Top"
                    Height="20" 
